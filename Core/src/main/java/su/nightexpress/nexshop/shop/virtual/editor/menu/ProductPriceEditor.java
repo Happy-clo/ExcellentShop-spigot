@@ -11,7 +11,6 @@ import su.nexmedia.engine.utils.CollectionsUtil;
 import su.nexmedia.engine.utils.ItemUtil;
 import su.nexmedia.engine.utils.StringUtil;
 import su.nightexpress.nexshop.ExcellentShop;
-import su.nightexpress.nexshop.Placeholders;
 import su.nightexpress.nexshop.api.shop.ProductPricer;
 import su.nightexpress.nexshop.api.type.PriceType;
 import su.nightexpress.nexshop.api.type.TradeType;
@@ -28,7 +27,7 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
-public class ProductPriceEditor extends EditorMenu<ExcellentShop, VirtualProduct> {
+public class ProductPriceEditor extends EditorMenu<ExcellentShop, VirtualProduct<?, ?>> {
 
     private static final String TEXTURE_PRICE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmI5Mjk5YjcyNGM1ZDM0YWM5M2VkZTc1NjAxZGZlYjBiZGE1NzhkNzBiOGY0ZDdmODJkNzY3NmYwYzZjMTE0YSJ9fX0=";
     private static final String TEXTURE_BUY = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmY2Yjg1ZjYyNjQ0NGRiZDViZGRmN2E1MjFmZTUyNzQ4ZmU0MzU2NGUwM2ZiZDM1YjZiNWU3OTdkZTk0MmQifX19";
@@ -38,8 +37,8 @@ public class ProductPriceEditor extends EditorMenu<ExcellentShop, VirtualProduct
     private static final String TEXTURE_STEP = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2U0ZjJmOTY5OGMzZjE4NmZlNDRjYzYzZDJmM2M0ZjlhMjQxMjIzYWNmMDU4MTc3NWQ5Y2VjZDcwNzUifX19";
 
 
-    public ProductPriceEditor(@NotNull VirtualProduct product) {
-        super(product.getShop().plugin(), product, Placeholders.EDITOR_VIRTUAL_TITLE, 27);
+    public ProductPriceEditor(@NotNull VirtualProduct<?, ?> product) {
+        super(product.getShop().plugin(), product, product.getShop().getName() + ": Product Price Settings", 27);
 
         this.addReturn(22).setClick((viewer, event) -> {
             this.object.getEditor().open(viewer.getPlayer(), 1);
@@ -47,8 +46,22 @@ public class ProductPriceEditor extends EditorMenu<ExcellentShop, VirtualProduct
 
         this.addItem(ItemUtil.createCustomHead(TEXTURE_PRICE), VirtualLocales.PRODUCT_PRICE_TYPE, 4).setClick((viewer, event) -> {
             PriceType priceType = CollectionsUtil.next(product.getPricer().getType());
+
+            double sell = product.getPricer().getPrice(TradeType.SELL);
+            double buy = product.getPricer().getPrice(TradeType.BUY);
+
             product.setPricer(ProductPricer.from(priceType));
             ProductPriceStorage.deleteData(product);
+
+            if (product.getPricer() instanceof RangedProductPricer pricer) {
+                pricer.setPriceMin(TradeType.BUY, buy);
+                pricer.setPriceMax(TradeType.BUY, buy);
+                pricer.setPriceMin(TradeType.SELL, sell);
+                pricer.setPriceMax(TradeType.SELL, sell);
+            }
+            product.getPricer().setPrice(TradeType.BUY, buy);
+            product.getPricer().setPrice(TradeType.SELL, sell);
+
             this.save(viewer);
         });
 

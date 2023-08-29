@@ -59,6 +59,10 @@ public class ChestConfig {
         "https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/block/Container.html"
     ).setWriter((cfg, path, set) -> cfg.set(path, set.stream().map(Enum::name).toList()));
 
+    public static final JOption<Boolean> SHOP_AUTO_BANK = JOption.create("Shops.Auto_Bank", true,
+        "Sets whether or not player's shop bank will be auto-managed without manual operations.",
+        "This means that players will gain/lose their funds instantly for each transaction in their shops.");
+
     public static final JOption<Double> SHOP_CREATION_COST_CREATE = JOption.create("Shops.Creation.Cost.Create", 0D,
         "Sets how much player have to pay in order to create a chest shop.");
 
@@ -127,7 +131,7 @@ public class ChestConfig {
         "You can provide different showcases for different shop types you set in 'Allowed_Containers' option.",
         "Showcase is basically an invisible armor stand with equipped item on the head.",
         "Feel free to use custom-modeled items and such!",
-        Placeholders.URL_ENGINE_ITEMS
+        Placeholders.WIKI_ITEMS_URL
     ).setWriter((cfg, path, map) -> map.forEach((type, item) -> cfg.setItem(path + "." + type, item)));
 
     public static final JOption<Boolean> DISPLAY_HOLOGRAM_ENABLED = JOption.create("Display.Title.Enabled",

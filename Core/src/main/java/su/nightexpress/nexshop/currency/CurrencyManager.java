@@ -1,5 +1,6 @@
 package su.nightexpress.nexshop.currency;
 
+import me.TechsCode.UltraEconomy.UltraEconomy;
 import me.xanium.gemseconomy.GemsEconomy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +15,7 @@ import su.nightexpress.nexshop.currency.handler.*;
 import su.nightexpress.nexshop.currency.impl.CoinsEngineCurrency;
 import su.nightexpress.nexshop.currency.impl.ConfigCurrency;
 import su.nightexpress.nexshop.currency.impl.ItemCurrency;
+import su.nightexpress.nexshop.currency.impl.UltraEconomyCurrency;
 import su.nightexpress.nexshop.hook.HookId;
 
 import java.util.Collection;
@@ -49,11 +51,9 @@ public class CurrencyManager extends AbstractManager<ExcellentShop> {
         }
         if (EngineUtils.hasPlugin(HookId.PLAYER_POINTS)) {
             this.registerCurrency(HookId.PLAYER_POINTS, PlayerPointsHandler::new);
-            this.deprecatedCurrency(HookId.PLAYER_POINTS);
         }
         if (EngineUtils.hasPlugin(HookId.GAME_POINTS)) {
             this.registerCurrency(HookId.GAME_POINTS, GamePointsHandler::new);
-            this.deprecatedCurrency(HookId.GAME_POINTS);
         }
         if (EngineUtils.hasPlugin(HookId.ELITEMOBS)) {
             this.registerCurrency(HookId.ELITEMOBS, EliteMobsHandler::new);
@@ -67,6 +67,12 @@ public class CurrencyManager extends AbstractManager<ExcellentShop> {
             }
         }
 
+        if (EngineUtils.hasPlugin(HookId.ULTRA_ECONOMY)) {
+            UltraEconomy.getAPI().getCurrencies().forEach(currency -> {
+                this.registerCurrency(new UltraEconomyCurrency(currency));
+            });
+        }
+
         for (JYML cfg : JYML.loadAll(plugin.getDataFolder() + DIR_CUSTOM, true)) {
             ItemCurrency currency = new su.nightexpress.nexshop.currency.impl.ItemCurrency(plugin, cfg);
             if (currency.load()) {
@@ -75,20 +81,13 @@ public class CurrencyManager extends AbstractManager<ExcellentShop> {
         }
     }
 
-    private void deprecatedCurrency(@NotNull String plugin) {
-        this.plugin.warn("=".repeat(15));
-        this.plugin.warn("Support for the '" + plugin + "' plugin is deprecated!");
-        this.plugin.warn("Please, consider to switch to our new free custom currency " + HookId.COINS_ENGINE + " plugin instead.");
-        this.plugin.warn("=".repeat(15));
-    }
-
     @Override
     protected void onShutdown() {
         this.currencyMap.clear();
     }
 
     public boolean registerCurrency(@NotNull String id, @NotNull Supplier<CurrencyHandler> supplier) {
-        JYML cfg = JYML.loadOrExtract(plugin, DIR_DEFAULT + id + ".yml");
+        JYML cfg = JYML.loadOrExtract(plugin, DIR_DEFAULT, id.toLowerCase() + ".yml");
         ConfigCurrency currency = new ConfigCurrency(plugin, cfg, supplier.get());
         if (!currency.load()) return false;
 

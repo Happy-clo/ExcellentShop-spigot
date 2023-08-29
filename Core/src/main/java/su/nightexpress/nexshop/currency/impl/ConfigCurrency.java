@@ -28,8 +28,7 @@ public class ConfigCurrency extends AbstractConfigHolder<ExcellentShop> implemen
 
         this.placeholderMap = new PlaceholderMap()
             .add(Placeholders.CURRENCY_ID, this::getId)
-            .add(Placeholders.CURRENCY_NAME, this::getName)
-        ;
+            .add(Placeholders.CURRENCY_NAME, this::getName);
     }
 
     @Override
@@ -39,9 +38,6 @@ public class ConfigCurrency extends AbstractConfigHolder<ExcellentShop> implemen
         this.name = Colorizer.apply(cfg.getString("Name", StringUtil.capitalizeUnderscored(this.getId())));
         this.format = Colorizer.apply(cfg.getString("Format", Placeholders.GENERIC_PRICE + " " + Placeholders.CURRENCY_NAME));
         this.icon = cfg.getItem("Icon");
-        if (this.icon.getType().isAir()) {
-            this.icon = new ItemStack(Material.GOLD_INGOT);
-        }
         return true;
     }
 
@@ -79,6 +75,9 @@ public class ConfigCurrency extends AbstractConfigHolder<ExcellentShop> implemen
     @NotNull
     @Override
     public ItemStack getIcon() {
+        if (this.icon == null || this.icon.getType().isAir()) {
+            this.icon = new ItemStack(Material.GOLD_INGOT);
+        }
         return new ItemStack(this.icon);
     }
 }
