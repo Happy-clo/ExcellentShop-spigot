@@ -49,6 +49,12 @@
         </repository>
 
         <repository>
+            <id>oraxen</id>
+            <name>Oraxen Repository</name>
+            <url>https://repo.oraxen.com/releases</url>
+        </repository>
+
+        <repository>
             <id>techscode</id>
             <url>https://repo.techscode.com/repository/maven-releases/</url>
         </repository>
@@ -74,9 +80,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.alex9849.arm</groupId>
-            <artifactId>AdvancedRegionMarket</artifactId>
-            <version>3.5.3</version>
+            <groupId>com.github.alex9849.advanced-region-market</groupId>
+            <artifactId>mc1-13adapter</artifactId>
+            <version>3.3.5</version>
         </dependency>
         <dependency>
             <groupId>me.clip</groupId>
