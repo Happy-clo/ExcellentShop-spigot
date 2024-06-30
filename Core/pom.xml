@@ -91,9 +91,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>io.th0rgal.oraxen</groupId>
-            <artifactId>Oraxen</artifactId>
-            <version>1.155.1</version>
+            <groupId>io.th0rgal</groupId>
+            <artifactId>oraxen</artifactId>
+            <version>1.177.0</version>
         </dependency>
         <dependency>
             <groupId>org.black_ixx</groupId>
